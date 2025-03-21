@@ -1,6 +1,40 @@
-@WebApi_net9_HostAddress = http://localhost:5223
+﻿@WebApi_net9_HostAddress = http://localhost:5223
 
 GET {{WebApi_net9_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET {{WebApi_net9_HostAddress}}/tickets/
+Accept: application/json
+
+###
+
+PUT {{WebApi_net9_HostAddress}}/ticket
+Accept: application/json
+Content-Type: application/json
+
+{
+  "Id": 123,
+  "Title": "Это новый 123 тикет",
+  "Description": "Это описание",
+  "TicketStatus": 1
+}
+###
+
+PATCH {{WebApi_net9_HostAddress}}/ticket
+Accept: application/json
+Content-Type: application/json
+
+{
+  "Id": 1,
+  "Title": "Это обновленный тикет",
+  "Description": "Это описание",
+  "TicketStatus": 1
+}
+###
+
+DELETE {{WebApi_net9_HostAddress}}/ticket/1
 Accept: application/json
 
 ###

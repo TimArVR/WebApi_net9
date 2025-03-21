@@ -16,6 +16,20 @@ namespace WebApi_net9
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //Добавляем детализацию Problem
+            builder.Services.AddProblemDetails(options =>
+            {
+                options.CustomizeProblemDetails = context =>
+                {
+                    context.ProblemDetails.Extensions.TryAdd("dateTime", DateTime.Now.ToString());
+                    //Можно добавить в Problem также информацию из HttpContext
+                    //(там вся информация которая есть в запросе) как Request так и Response
+                    context.ProblemDetails.Extensions.TryAdd("method", context.HttpContext.Request.Method);
+                    context.ProblemDetails.Extensions.TryAdd("path", context.HttpContext.Request.Path);
+                    context.ProblemDetails.Extensions.TryAdd("queryString", context.HttpContext.Request.QueryString);
+                };
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -33,9 +47,11 @@ namespace WebApi_net9
             var database = new TestDatabase();
 
             //GET: Запрос данных с сервера
-            app.MapGet("/tickets", () => 
-            { 
-                return Results.Ok(database.GetTickets()); //Results.Ok - по умолчанию, можно не писать. Это по сути HTTP код
+            app.MapGet("/tickets", () =>
+            {
+                return Results.Ok(database.GetTickets());
+                //Results.Ok - по умолчанию, можно не писать. Это по сути HTTP код
+                //Сейчас рекомендуется возвращать Problem
             });
             //app.MapPost("/cart/", () => { return "Тест"; }); //Получить с большим количеством параметров
 
@@ -50,29 +66,27 @@ namespace WebApi_net9
             });
 
             //PATCH: Пропатчить, частично обновить данные на сервере
-            app.MapPatch("/ticket", (Ticket model) => 
+            app.MapPatch("/ticket", (Ticket model) =>
             {
                 try
                 {
                     database.UpdateTicket(model);
                 }
-                catch (Exception) 
+                catch (Exception)
                 {
-                    return Results.NotFound();
+                    return Results.Problem("Этот тикет не найден",
+                        statusCode: StatusCodes.Status404NotFound, title: "Искомое не нашли");
+                    //Сейчас рекомендуется возвращать Problem, причем детализацию Проблемы можно увеличить (см. выше строку 19)
                 }
                 return Results.Ok();
             }); //{id} не нужен, т.к. в модели есть Id
 
             //DELETE: Удаление данных на сервере
-            app.MapDelete("/ticket", (int id) => 
+            app.MapDelete("/ticket/{id}", (int id) =>
             {
                 database.DeleteTicket(id);
                 return Results.Ok();
             });
-
-
-
-
 
 
 
