@@ -15,6 +15,7 @@ namespace WebApi_net9
             builder.Services.AddOpenApi();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddControllers();
 
             //Добавляем детализацию Problem
             builder.Services.AddProblemDetails(options =>
@@ -58,6 +59,13 @@ namespace WebApi_net9
                 //Results.Ok - по умолчанию, можно не писать. Это по сути HTTP код
                 //Сейчас рекомендуется возвращать Problem
             });
+            app.MapGet("/ticket/{id}", (int id) =>
+            {
+                return Results.Ok(database.GetTickets().FirstOrDefault(x => x.Id == id));
+
+            });
+
+
             //app.MapPost("/cart/", () => { return "Тест"; }); //Получить с большим количеством параметров
 
             //POST: Отправка данных на сервер
@@ -116,6 +124,17 @@ namespace WebApi_net9
                 return forecast;
             })
             .WithName("GetWeatherForecast");
+
+
+
+            //Добавим маршруты для работы WebApi через Контроллеры
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}"
+                );
+
+
+
 
 
             app.Run();
