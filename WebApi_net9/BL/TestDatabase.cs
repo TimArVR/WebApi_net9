@@ -23,7 +23,7 @@ namespace WebApi_net9.BL
             //Если объект не найден - выбросим исключение
             if (t == null)
             {
-                throw new Exception("Такой тикет не найден");
+                throw new TicketNotFoundException("Такой тикет не найден");
             }
             //Если объект найден - обновим его
             t.Title = ticket.Title;
@@ -36,7 +36,7 @@ namespace WebApi_net9.BL
             //Если объект не найден - выбросим исключение
             if (t == null)
             {
-                throw new Exception("Такой тикет не найден");
+                throw new TicketException("Такой тикет не найден");
             }
             tickets.Remove(t);
         }

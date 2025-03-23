@@ -30,6 +30,9 @@ namespace WebApi_net9
                 };
             });
 
+            //Регистрируем IExceptionHandler
+            builder.Services.AddExceptionHandler<WebapiExceptionHandler>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -41,6 +44,8 @@ namespace WebApi_net9
             }
 
             app.UseHttpsRedirection();
+            //Регистрируем IExceptionHandler
+            app.UseExceptionHandler();
 
             app.UseAuthorization();
 
@@ -68,17 +73,20 @@ namespace WebApi_net9
             //PATCH: Пропатчить, частично обновить данные на сервере
             app.MapPatch("/ticket", (Ticket model) =>
             {
-                try
-                {
-                    database.UpdateTicket(model);
-                }
-                catch (Exception)
-                {
-                    return Results.Problem("Этот тикет не найден",
-                        statusCode: StatusCodes.Status404NotFound, title: "Искомое не нашли");
-                    //Сейчас рекомендуется возвращать Problem, причем детализацию Проблемы можно увеличить (см. выше строку 19)
-                }
+                database.UpdateTicket(model);
                 return Results.Ok();
+
+                //try
+                //{
+                //    database.UpdateTicket(model);
+                //}
+                //catch (Exception)
+                //{
+                //    return Results.Problem("Этот тикет не найден",
+                //        statusCode: StatusCodes.Status404NotFound, title: "Искомое не нашли");
+                //    //Сейчас рекомендуется возвращать Problem, причем детализацию Проблемы можно увеличить (см. выше строку 19)
+                //}
+                //return Results.Ok();
             }); //{id} не нужен, т.к. в модели есть Id
 
             //DELETE: Удаление данных на сервере
