@@ -45,7 +45,20 @@ namespace WebApi_net9.BL
                 return await problemDetailsService.TryWriteAsync(problemDetails);
             }
 
-            return true;
+            //Добавляем обработку осташихся исключений
+
+            var globalProblemDetails = new ProblemDetailsContext()
+            {
+                HttpContext = httpContext,
+                ProblemDetails = new Microsoft.AspNetCore.Mvc.ProblemDetails()
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+
+                }
+            };
+            httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            return await problemDetailsService.TryWriteAsync(globalProblemDetails);
+
         }
     }
 }
